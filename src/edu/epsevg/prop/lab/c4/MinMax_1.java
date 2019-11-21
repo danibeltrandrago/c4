@@ -1,4 +1,5 @@
 package edu.epsevg.prop.lab.c4;
+import java.util.LinkedList;
 
 /**
  * Jugador aleatori
@@ -9,6 +10,7 @@ public class MinMax_1
   implements Jugador, IAuto
 {
   private String nom;
+  private int my_color;
   
   public MinMax_1()
   {
@@ -17,6 +19,7 @@ public class MinMax_1
   
   public int moviment(Tauler t, int color)
   {
+    my_color = color;
     int col = (int)(t.getMida() * Math.random());
     while (!t.movpossible(col)) {
       col = (int)(t.getMida() * Math.random());
@@ -26,14 +29,12 @@ public class MinMax_1
   }
   
   public float MinMax(Tauler t, int depth, boolean minmax,int color){
-      valid_locations = get_valid_locations(t);
-      is_terminal = is_terminal_node(t);
-      float valor = 0;
+      LinkedList <Tauler> valid_locations = get_valid_locations(t);
+      float valor = heuristica(t,my_color);
+      boolean is_terminal = valor == Float.POSITIVE_INFINITY || valor == Float.NEGATIVE_INFINITY || !t.espotmoure();
       if (depth == 0 || is_terminal) {
-          if (is_terminal)
-              return ;
-          else 
-              return heuristica(t,color);
+          int posible = t.espotmoure() ? 1 : 0;
+          return valor * posible;
       }                
               
       if (minmax){
@@ -47,8 +48,17 @@ public class MinMax_1
      
   }
   
-
-  
+  public LinkedList<Tauler> get_valid_locations(Tauler t){
+      LinkedList<Tauler> valid_loc = new LinkedList<>();
+      for(int i = 0; i < t.getMida(); i++){
+          if(t.movpossible(i)){
+              t.afegeix(i, my_color);
+              valid_loc.add(t);
+          }
+      }
+      return valid_loc;
+  }
+    
   public float heuristica(Tauler t, int color){
       float max = 0;
       for(int j = 0; j < t.getMida(); j++){
@@ -213,7 +223,7 @@ public class MinMax_1
       }
       return 1/vuit;
   }
-    
+      
   public String nom()
   {
     return nom;
