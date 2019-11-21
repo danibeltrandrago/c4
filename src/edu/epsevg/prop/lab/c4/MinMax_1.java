@@ -21,18 +21,33 @@ public class MinMax_1
     while (!t.movpossible(col)) {
       col = (int)(t.getMida() * Math.random());
     }
-      heuristica(t, color);
-    return col;
+    heuristica(t, color);
+    return col;                 
   }
   
-  public int MinMax(int depth, Tauler t){
-      return 0;
+  public float MinMax(Tauler t, int depth, boolean minmax,int color){
+      valid_locations = get_valid_locations(t);
+      is_terminal = is_terminal_node(t);
+      float valor = 0;
+      if (depth == 0 || is_terminal) {
+          if (is_terminal)
+              return ;
+          else 
+              return heuristica(t,color);
+      }                
+              
+      if (minmax){
+          valor = Float.NEGATIVE_INFINITY;
+          //per cada columna
+              
+          
+      } else {
+          valor = Float.POSITIVE_INFINITY;
+      }
+     
   }
   
-  public int Max(int depth, Tauler t){
-      //if(depth == 0)return heuristica(t);
-      return 0;
-  }
+
   
   public float heuristica(Tauler t, int color){
       float max = 0;
@@ -71,12 +86,12 @@ public class MinMax_1
       int color = t.getColor(alt,col);
       boolean trobat = false;
       for(int i = alt; i >= 0 && !trobat; i--){
-          if(color != t.getColor(i,col))trobat = true;
+          if(color != t.getColor(i,col))trobat = true; //#################################################### color -> mi_color
           else ++valor;
       }
       
-      valor = valor * espacioVacio(t, col, alt+1);
-      if(valor >= 3)valor = Float.POSITIVE_INFINITY;
+      valor = valor * espacioVacio(t, col, alt+1); // dudaaaaaaaaaa??
+      if(valor >= 3)valor = Float.POSITIVE_INFINITY; // si la distancia a una ficha de las mias es mayor k 3 valor es inf
       
       if(color != mi_color && valor != 0)return -valor;
       else return valor;
