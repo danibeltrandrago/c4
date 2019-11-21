@@ -61,7 +61,7 @@ public class MinMax_1
            int fila = get_next_fila_open(t,i);
            Tauler taux = copy(t);
            taux.afegeix(i, 1); // EL 2 ÉS LA FITXA DE LA IA
-           float nouValor = MinMax(taux,depth-1,false).getRight();
+           float nouValor = MinMax(taux,depth-1,true).getRight();
            if (nouValor < valor){
                valor = nouValor;
                column = i;
