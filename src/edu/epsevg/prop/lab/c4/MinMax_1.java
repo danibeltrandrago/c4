@@ -14,9 +14,6 @@ public class MinMax_1
   implements Jugador, IAuto
 {
   private String nom;
-  private int my_color = 1;
-  private boolean sol = false;
-  private int col = -1;
   
   public MinMax_1()
   {
@@ -25,74 +22,86 @@ public class MinMax_1
   
   public int moviment(Tauler t, int color)
   {
-    my_color = color;
-    sol = false;
+    int col = (int)Math.random()* t.getMida();
+    float alpha = Float.NEGATIVE_INFINITY;
     for(int i = 0; i < t.getMida() && t.espotmoure(); i++){
-        
+        Tauler aux = new Tauler(t);
+          if(aux.movpossible(i)){
+              aux.afegeix(i, 1);
+              if(aux.solucio(i, 1))return i;
+              else{
+                  float nvalor = Min(aux,1,alpha,Float.POSITIVE_INFINITY,7);
+                  if(nvalor > alpha)col = i;
+                  alpha = Math.max(alpha,nvalor);
+              }
+          }
     }
-    return MinMax(t,8,true, -9999999, 9999999).getKey();
+    
+    while(!t.movpossible(col)){
+        col = (int)Math.random()*t.getMida();
+    }
+    
+    System.out.println("Col: "+col);
+    return col;
   }
   
-  public Pair <Integer,Float> MinMax(Tauler t, int depth, boolean minmax, float alpha, float beta){
-    if (depth == 0 || !t.espotmoure()) {
-        for(int i = 0; i < t.getMida(); i++){
-            if(t.solucio(i, 1))return new Pair<>(i,Float.MAX_VALUE);
-            else if(t.solucio(i, -1))return new Pair<>(i,Float.MIN_VALUE);
-            else return new Pair<>(i,(float)(0));
-        }
-    }                
-    if (minmax){
-        float valor = -9999999;
-        int column = 0;
-        boolean guanyador = false;
-        for (int i = 0; i < t.getMida() && !guanyador;i++){
-            if(t.movpossible(i)){
-                Tauler taux = new Tauler(t);
-                taux.afegeix(i, -1);
-                if(taux.solucio(i, -1) == true){
-                    System.out.println("Solucio neg");
-                    return new Pair<>(i,Float.MIN_VALUE);
-                }
-                float nouValor = MinMax(taux,depth-1,false,  alpha, beta).getValue();
-                if (nouValor > valor){
-                    valor = nouValor;
-                    column = i;
-                }
-                alpha = Math.max(alpha, valor);
-                if(alpha >= beta){
-                    return new Pair<>(i, alpha);
-                }
-                
-            }
-        }
-        return new Pair<>(column, valor);
-    } else {
-        float valor = 9999999;
-        int column = 0;
-        boolean guanyador = false;
-        for (int i = 0; i < t.getMida() && !guanyador; i++){
-            if(t.movpossible(i)){
-                Tauler taux = new Tauler(t);
-                taux.afegeix(i, my_color);
-                if(taux.solucio(i, my_color) == true){
-                    System.out.println("Solucio Pos");
-                    return new Pair<>(i,Float.MAX_VALUE);
-                }else{
-                    float nouValor = MinMax(taux,depth-1,true, alpha, beta).getValue();
-                    if (nouValor < valor){
-                        valor = nouValor;
-                        column = i;
-                    }
-                    beta = Math.min(beta, valor);
-                    if(alpha >= beta){
-                        return new Pair<>(i, beta);
-                    }
-                }
-            }
-        }
-        return new Pair<>(column, valor);
-    }
+  public float Max(Tauler t, int color, float alpha, float beta, int depth){
+      if(!t.espotmoure() || depth == 0){
+          return basicHeuristica(t);
+          //return (float) Math.random() * t.getMida();
+      }
+      for(int i = 0; i < t.getMida(); i++){
+          Tauler aux = new Tauler(t);
+          if(aux.movpossible(i)){
+              aux.afegeix(i, 1);
+              if(aux.solucio(i, 1))return Float.POSITIVE_INFINITY;
+              else{
+                  float nvalor = Min(aux,1,alpha,beta,depth-1);
+                  alpha = Math.max(alpha,nvalor);
+                  if(beta <= alpha)return beta;
+              }
+          }
+      }
+      return alpha;
   }
+  
+  public float Min(Tauler t, int color, float alpha, float beta, int depth){
+      if(!t.espotmoure() || depth == 0){
+          return heuristica(t, 1);
+      }
+      for(int i = 0; i < t.getMida(); i++){
+          Tauler aux = new Tauler(t);
+          if(aux.movpossible(i)){
+              aux.afegeix(i, -1);
+              if(aux.solucio(i, -1))return Float.NEGATIVE_INFINITY;
+              else{
+                  float nvalor = Max(aux,-1,alpha,beta,depth-1);
+                  beta = Math.min(beta, nvalor);
+                  if(beta <= alpha)return alpha;  
+              }          
+          }
+      }
+      return beta;
+  }
+  
+  public float basicHeuristica(Tauler t){
+      //System.out.println("Hola");
+      if(t.espotmoure() == false)return Float.NEGATIVE_INFINITY;
+      else{
+          for(int i = 0; i < t.getMida(); i++){
+              if(t.solucio(i, 1)){
+                  System.out.println("Solucio+");
+                  return Float.POSITIVE_INFINITY;
+              }
+              else if(t.solucio(i, -1)){
+                  System.out.println("Solucio-");
+                  return Float.NEGATIVE_INFINITY;
+              }
+          }
+          return (float) 0;
+      }
+  }
+  
   
   public float heuristica(Tauler t, int color){
       float max = 0;
