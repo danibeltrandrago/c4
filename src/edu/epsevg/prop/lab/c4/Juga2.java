@@ -95,10 +95,11 @@ public class Juga2 extends javax.swing.JFrame {
         
         
         // Definiu al vostre gust els jugadors a enfrontar.
-        Jugador p1 = new Manual();
+        Jugador p1 = new MinMax_1(1);
         //Jugador p1 = new Aleatori();
         
-        Jugador p2 = new Profe(8,false);
+        //Jugador p2 = new Aleatori();
+        Jugador p2 = new Aleatori();
         //Jugador p2 = new Manual();
         
         //Bolean per jugar AI vs AI
@@ -366,7 +367,6 @@ public class Juga2 extends javax.swing.JFrame {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        System.out.println(">paint");
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (t.getColor(j, i) == 1) {
