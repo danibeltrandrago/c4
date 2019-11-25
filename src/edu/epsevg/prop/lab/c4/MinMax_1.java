@@ -17,12 +17,12 @@ public class MinMax_1
   
   public MinMax_1()
   {
-    nom = "TuPutaMadre";
+    nom = "Danésar";
   }
   
   public int moviment(Tauler t, int color)
   {
-    int col = (int)Math.random()* t.getMida();
+    int col = t.getMida()/2;
     float alpha = Float.NEGATIVE_INFINITY;
     for(int i = 0; i < t.getMida() && t.espotmoure(); i++){
         Tauler aux = new Tauler(t);
@@ -37,18 +37,17 @@ public class MinMax_1
           }
     }
     
-    while(!t.movpossible(col)){
-        col = (int)Math.random()*t.getMida();
+    int i = 0;
+    while (!t.movpossible(col) && i < t.getMida()){
+        col = i;
+        i++;
     }
-    
-    System.out.println("Col: "+col);
     return col;
   }
   
   public float Max(Tauler t, int color, float alpha, float beta, int depth){
       if(!t.espotmoure() || depth == 0){
           return basicHeuristica(t);
-          //return (float) Math.random() * t.getMida();
       }
       for(int i = 0; i < t.getMida(); i++){
           Tauler aux = new Tauler(t);
@@ -85,7 +84,6 @@ public class MinMax_1
   }
   
   public float basicHeuristica(Tauler t){
-      //System.out.println("Hola");
       if(t.espotmoure() == false)return Float.NEGATIVE_INFINITY;
       else{
           for(int i = 0; i < t.getMida(); i++){
@@ -110,36 +108,28 @@ public class MinMax_1
                   if(t.getColor(i,j) == 0){
                       if(i>0)if(t.getColor(i-1,j) != 0){
                           max+=2*vertical(t, j, i-1, color);
-                          //System.out.print(" V["+i+","+j+"]:"+vertical(t, j, i-1, color));
                       }
                       if(j>0)if(t.getColor(i, j-1) != 0){
                           max+=2*horizontalI(t,j-1,i,color);
-                          //System.out.print(" Hi["+i+","+j+"]:"+horizontalI(t,j-1,i,color));
                       }
                       if(j<t.getMida()-1)if(t.getColor(i, j+1) != 0){
                           max+=2*horizontalD(t,j+1,i,color);
-                          //System.out.print(" Hd["+i+","+j+"]:"+horizontalD(t,j+1,i,color));
                       }
                       if(j<t.getMida()-1 && i>0)if(t.getColor(i-1,j+1) != 0){
                           max+=diagonalDchInf(t, j+1, i-1, color);
-                          //System.out.print(" Ddi["+i+","+j+"]:"+diagonalDchInf(t, j+1, i-1, color));
                       }
                       if(j<t.getMida()-1 && i<t.getMida()-1)if(t.getColor(i+1,j+1) != 0){
-                          max+=diagonalDchSup(t, j+1, i+1, color);
-                          //System.out.print(" Dds["+i+","+j+"]:"+diagonalDchSup(t, j+1, i+1, color));                          
+                          max+=diagonalDchSup(t, j+1, i+1, color);                        
                       }
                       if(j>0 && i>0)if(t.getColor(i-1,j-1) != 0){
                           max+=diagonalEsqInf(t, j-1, i-1, color);
-                          //System.out.print(" Dei["+i+","+j+"]:"+diagonalEsqInf(t, j-1, i-1, color));
                       }
                       if(j>0 && i>t.getMida()-1)if(t.getColor(i+1,j-1) != 0){
                           max+=diagonalEsqSup(t, j-1, i+1, color);
-                          //System.out.print(" Des["+i+","+j+"]:"+diagonalEsqSup(t, j-1, i+1, color));
                       }
                   }
           }
       }
-      //System.out.println("");
       return max;
   }
   
@@ -152,7 +142,7 @@ public class MinMax_1
           else ++valor;
       }
       
-      if(valor >= 3)valor = Float.POSITIVE_INFINITY; // si la distancia a una ficha de las mias es mayor k 3 valor es inf
+      if(valor >= 3)valor = Float.POSITIVE_INFINITY; 
       else Math.pow(4,valor);
       if(color == -1 && valor != 0)return -valor;
       else return valor;
